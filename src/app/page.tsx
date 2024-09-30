@@ -1,8 +1,17 @@
 import Image from "next/image";
-import { getTopic } from "./lib/topics";
+import prisma from "./lib/prisma";
 
-export default function Home() {
-  const topic = getTopic(new Date());
+export default async function Home() {
+  const topic = await prisma.topic.findFirst({
+    where: {
+      startDate: {
+        lte: new Date(),
+      },
+      endDate: {
+        gte: new Date(),
+      },
+    },
+  });
 
   return (
     <div className="h-screen flex flex-col">
