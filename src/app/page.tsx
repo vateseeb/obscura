@@ -1,5 +1,8 @@
-import Image from "next/image";
-import prisma from "./lib/prisma";
+import { Footer } from "@/app/footer"
+import { Button } from "@/components/ui/button"
+import { CalendarDays, Camera, Image as ImageIcon } from "lucide-react"
+import Link from 'next/link'
+import prisma from "./lib/prisma"
 
 export default async function Home() {
   const topic = await prisma.topic.findFirst({
@@ -13,16 +16,47 @@ export default async function Home() {
     },
   });
 
+  if (!topic) {
+    return <div>No topic found</div>
+  }
+
+  // Calculate days remaining
+  const daysRemaining = Math.ceil((topic.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
   return (
-    <div className="h-screen flex flex-col">
-      <header className="w-full bg-current p-4 top-0 flex items-center gap-4">
-        <Image src="/logo.svg" alt="Logo" width={80} height={80} className="pl-6"/>
-        <h1 className="text-4xl font-bold text-background">Obscura</h1>
+    <div className="min-h-screen bg-black text-white flex flex-col">
+<header className="p-4">
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-2">
+            <div className="w-2 h-2 bg-black rounded-full"></div>
+          </div>
+          <span className="text-2xl font-bold">Obscura</span>
+        </div>
       </header>
-    <main className="flex flex-col items-center justify-center flex-grow">
-      <h2 className="text-2xl font-semibold">Topic of the Week</h2>
-      <p className="text-6xl font-bold mt-4">{topic?.title}</p>
-    </main>
+      <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
+        <h2 className="text-lg mb-2">Topic of the Week</h2>
+        <h1 className="text-7xl font-bold mb-12 mt-4 py-6 border-y border-gray-800">{topic?.title}</h1>
+        
+        <div className="flex space-x-4 mb-8">
+          <Button asChild variant="outline" className="bg-transparent hover:bg-white hover:text-black transition-colors">
+            <Link href="/upload">
+              <Camera className="mr-2 h-4 w-4" />
+              Submit
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="bg-transparent hover:bg-white hover:text-black transition-colors">
+            <Link href="/gallery">
+              <ImageIcon className="mr-2 h-4 w-4" />
+              Gallery
+            </Link>
+          </Button>
+        </div>
+        <div className="text-sm text-gray-400 flex items-center">
+          <CalendarDays className="mr-2 h-4 w-4" />
+          Submissions end in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}
+        </div>
+      </main>
+      <Footer />
     </div>
-  );
+  )
 }
