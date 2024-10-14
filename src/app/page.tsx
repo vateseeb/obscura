@@ -4,6 +4,8 @@ import { CalendarDays, Camera, Image as ImageIcon } from "lucide-react"
 import Link from 'next/link'
 import prisma from "./lib/prisma"
 
+export const revalidate = 3600;
+
 export default async function Home() {
   const topic = await prisma.topic.findFirst({
     where: {
